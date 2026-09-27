@@ -1,0 +1,160 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Desempeño académico</h1>
+      <p class="muted"><%= user.ciclo %> · Semestre 2026-II · Análisis acumulado</p>
+    </div>
+    <span class="pill"><%= user.ciclo %></span>
+  </div>
+
+  <section class="stats">
+    <div class="stat">
+      <div class="stat-top"><span>Promedio general</span><i class="ico">🎓</i></div>
+      <strong><%= h.nota(d.promedio) %></strong>
+      <small class="<%= d.tendencia >= 0 ? 'up' : 'down' %>"><%= d.tendencia !== null ? (d.tendencia >= 0 ? '▲ +' : '▼ ') + d.tendencia + '% vs ciclo anterior' : 'Sin ciclo anterior' %></small>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><span>Créditos aprobados</span><i class="ico">📘</i></div>
+      <strong><%= d.creditosAprobados %>/<%= d.creditosCarrera %></strong>
+      <small><%= Math.round(d.creditosAprobados / d.creditosCarrera * 100) %>% completado</small>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><span>Ranking</span><i class="ico">🏆</i></div>
+      <strong><%= d.ranking ? 'Top ' + d.ranking.top + '%' : 'Sin ranking' %></strong>
+      <small><%= d.ranking ? 'Puesto ' + d.ranking.puesto + ' de ' + d.ranking.total : 'Registra tu primera nota' %></small>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><span>Tendencia</span><i class="ico">📈</i></div>
+      <strong><%= d.tendencia !== null ? (d.tendencia >= 0 ? '+' : '') + d.tendencia + '%' : '—' %></strong>
+      <small><%= d.tendencia === null ? 'Aún sin datos' : d.tendencia >= 0 ? 'Estable o en subida' : 'Bajando: revisa tu plan' %></small>
+    </div>
+  </section>
+
+  <div class="grid-main">
+    <div class="stack">
+      <section class="card">
+        <h3>Plan de mejora personalizado</h3>
+        <p class="muted small">Recomendaciones para mejorar el rendimiento y alcanzar el Top 8% del ranking.</p>
+        <div class="plan">
+          <div>
+            <h4>Horas de estudio recomendadas</h4>
+            <div class="plan-bars">
+              <div><small>Actual (7 días)</small><div class="bar"><span style="width:<%= Math.min(100, d.horasSemana / d.horasRecomendadas * 100) %>%"></span></div><b><%= d.horasSemana %> hrs</b></div>
+              <div><small>Recomendado</small><div class="bar green"><span style="width:100%"></span></div><b><%= d.horasRecomendadas %> hrs</b></div>
+            </div>
+          </div>
+          <div>
+            <h4>Cursos prioritarios</h4>
+            <ul class="prio">
+              <% d.prioritarios.forEach(function(c){ %>
+                <li><i></i><span><%= c.nombre %></span><b><%= c.nota !== null ? c.nota.toFixed(1) + '%' : 'No iniciado' %></b></li>
+              <% }) %>
+            </ul>
+          </div>
+          <div>
+            <h4>Proyección de promedio</h4>
+            <div class="proj"><span>Actual</span><b><%= d.promedio !== null ? d.promedio + '%' : '—' %></b></div>
+            <div class="proj"><span>Proyectado</span><b class="up"><%= d.proyeccion !== null ? '↑ ' + d.proyeccion + '%' : '—' %></b></div>
+            <p class="muted small">Si mantienes el ritmo y subes tus cursos prioritarios.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Evolución de notas por ciclo</h3>
+        <p class="muted small">Rendimiento histórico del promedio general.</p>
+        <% if (d.puntos.length) { %>
+        <div class="chart-wrap">
+          <svg viewBox="0 0 600 200" class="line-chart" role="img" aria-label="Evolución del promedio por ciclo">
+            <% [70, 80, 90, 100].forEach(function(v){ var y = 175 - (v - 70) / 30 * 150; %>
+              <line x1="30" x2="570" y1="<%= y %>" y2="<%= y %>" class="grid"/>
+              <text x="0" y="<%= y + 4 %>" class="axis"><%= v %></text>
+            <% }) %>
+            <polyline points="<%= d.puntos.map(function(p){ return p.x + ',' + p.y; }).join(' ') %>" class="line"/>
+            <% d.puntos.forEach(function(p){ %>
+              <circle cx="<%= p.x %>" cy="<%= p.y %>" r="4" class="dot"/>
+              <text x="<%= p.x %>" y="<%= p.y - 10 %>" class="val"><%= p.promedio.toFixed(1) %>%</text>
+              <text x="<%= p.x %>" y="196" class="axis mid"><%= p.ciclo %></text>
+            <% }) %>
+          </svg>
+        </div>
+        <% } else { %><p class="empty">Aún no hay notas registradas.</p><% } %>
+      </section>
+
+      <section class="card">
+        <h3>Rendimiento por curso actual</h3>
+        <p class="muted small">Calificaciones obtenidas en el semestre en curso.</p>
+        <div class="hbars">
+          <% d.cursos.forEach(function(c){ %>
+            <div class="hbar">
+              <span><%= c.nombre %></span>
+              <div class="bar <%= c.nota !== null && c.nota < 90 ? 'blue' : 'green' %>"><span style="width:<%= c.nota || 0 %>%"></span></div>
+              <b class="<%= c.nota === null ? 'muted' : '' %>"><%= c.nota !== null ? c.nota.toFixed(1) + '%' : 'Pendiente' %></b>
+            </div>
+          <% }) %>
+        </div>
+      </section>
+    </div>
+
+    <aside class="side">
+      <section class="card">
+        <h3>Fortalezas y áreas de mejora</h3>
+        <h4 class="ok-t">Fortalezas</h4>
+        <ul class="checks">
+          <% d.fortalezas.forEach(function(c){ %><li class="ok">✔ <%= c.nombre %> (<%= c.nota.toFixed(1) %>%)</li><% }) %>
+          <% if (!d.fortalezas.length) { %><li class="muted">Aún no hay cursos con 91% o más.</li><% } %>
+        </ul>
+        <h4 class="warn-t">Áreas de mejora</h4>
+        <ul class="checks">
+          <% d.mejoras.forEach(function(c){ %><li class="warn">▲ <%= c.nombre %> <%= c.nota === null ? '— pendiente de iniciar' : '(' + c.nota.toFixed(1) + '%)' %></li><% }) %>
+          <% if (!d.mejoras.length) { %><li class="muted">Todo por encima de 90%. ¡Bien!</li><% } %>
+        </ul>
+      </section>
+
+      <section class="card">
+        <h3>Distribución por categoría</h3>
+        <% var dist = d.distribucion, tot = dist.a + dist.b + dist.pendientes || 1, C = 2 * Math.PI * 40;
+           var segA = dist.a / tot * C, segB = dist.b / tot * C, segP = dist.pendientes / tot * C; %>
+        <div class="donut-row">
+          <svg viewBox="0 0 100 100" class="donut" role="img" aria-label="Distribución de cursos por rango">
+            <circle r="40" cx="50" cy="50" class="d-bg"/>
+            <circle r="40" cx="50" cy="50" class="d-a" stroke-dasharray="<%= segA %> <%= C %>"/>
+            <circle r="40" cx="50" cy="50" class="d-b" stroke-dasharray="<%= segB %> <%= C %>" stroke-dashoffset="<%= -segA %>"/>
+            <circle r="40" cx="50" cy="50" class="d-p" stroke-dasharray="<%= segP %> <%= C %>" stroke-dashoffset="<%= -(segA + segB) %>"/>
+            <text x="50" y="50" class="d-num"><%= d.cursos.length %></text>
+            <text x="50" y="63" class="d-lbl">cursos</text>
+          </svg>
+          <ul class="legend">
+            <li><i class="l-a"></i>Rango A (<%= dist.a %>)</li>
+            <li><i class="l-b"></i>Rango B (<%= dist.b %>)</li>
+            <li><i class="l-p"></i>Pendientes (<%= dist.pendientes %>)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="card">
+        <h3>Resumen de actividad semanal</h3>
+        <div class="proj"><span>Horas estudiadas (7 días)</span><b><%= d.horasSemana %> hrs</b></div>
+        <div class="proj"><span>Sesiones de estudio</span><b><%= d.sesionesSemana %></b></div>
+        <div class="proj"><span>Cursos trabajados</span><b><%= d.cursosSemana %></b></div>
+      </section>
+
+      <section class="card">
+        <h3>Metas del semestre</h3>
+        <ul class="goals">
+          <% d.metas.forEach(function(m){ %>
+            <li class="<%= m.completada ? 'done' : '' %>">
+              <p><%= m.completada ? '✔' : '◌' %> <%= m.titulo %></p>
+              <div class="bar <%= m.completada ? 'green' : '' %>"><span style="width:<%= m.progreso %>%"></span></div>
+              <small><%= m.detalle %></small>
+            </li>
+          <% }) %>
+        </ul>
+      </section>
+    </aside>
+  </div>
+</main>
+<%- include('partials/flash') %>
+<%- include('partials/foot') %>

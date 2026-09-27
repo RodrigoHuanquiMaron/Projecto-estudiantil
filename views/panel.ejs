@@ -1,0 +1,92 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Bienvenido de nuevo, <%= user.nombre.split(' ')[0] %></h1>
+      <p class="muted">Seguimiento del año académico 2026 · <%= user.ciclo %></p>
+    </div>
+    <span class="pill"><%= user.ciclo %></span>
+  </div>
+
+  <section class="stats">
+    <div class="stat">
+      <div class="stat-top"><span>Cursos totales</span><i class="ico">📚</i></div>
+      <strong><%= stats.en_curso %> activos</strong>
+      <small><%= stats.total %> inscritos · <%= stats.completados %> completados</small>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><span>Calificación promedio</span><i class="ico">🎖️</i></div>
+      <strong><%= h.nota(stats.promedio) %></strong>
+      <small>Máxima: <%= stats.maxima !== null ? stats.maxima.toFixed(1) + '%' : '—' %></small>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><span>Horas estudiadas</span><i class="ico">⏱️</i></div>
+      <strong><%= stats.horas %> hrs</strong>
+      <small>Prom. <%= stats.horasSemana %> hrs / semana</small>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><span>Certificados</span><i class="ico">🏅</i></div>
+      <strong><%= stats.certificados %> ganados</strong>
+      <small>Siguiente: Profesional en uso de Cloud</small>
+    </div>
+  </section>
+
+  <div class="grid-main">
+    <section>
+      <div class="section-head">
+        <h2>Cursos inscritos</h2>
+        <a href="/cursos" class="link small">Mostrar todos los cursos (<%= stats.total %>)</a>
+      </div>
+      <div class="mini-courses">
+        <% cursos.forEach(function(curso){ %>
+          <a class="card mini-course" href="/cursos/<%= curso.id %>">
+            <div class="card-meta">
+              <span><%= curso.categoria %></span>
+              <span class="badge <%= curso.estado %>"><%= h.estado(curso.estado) %></span>
+            </div>
+            <h3><%= curso.nombre %></h3>
+            <p class="muted small">Instructor: <%= curso.instructor %></p>
+            <%- include('partials/progress', { curso: curso }) %>
+          </a>
+        <% }) %>
+      </div>
+    </section>
+
+    <aside class="side">
+      <div class="card">
+        <div class="section-head tight">
+          <div>
+            <h3>Horas estudiadas esta semana</h3>
+            <p class="muted small">Tiempo total: <span id="horas-semana"><%= totalSemana %></span> horas</p>
+          </div>
+          <a class="btn btn-primary btn-sm" href="/estudio">Iniciar estudio</a>
+        </div>
+        <% var maxMin = Math.max.apply(null, semana.map(function(d){ return d.minutos; }).concat([60])); %>
+        <div class="bars">
+          <% semana.forEach(function(d, i){ %>
+            <div class="bar-col <%= i === hoy ? 'today' : '' %>" title="<%= Math.round(d.minutos) %> min">
+              <div class="bar-v"><span style="height:<%= Math.round(d.minutos / maxMin * 100) %>%"></span></div>
+              <small><%= d.nombre %></small>
+            </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="card">
+        <h3>Actividades recientes</h3>
+        <ul class="activity" id="lista-actividades">
+          <% actividades.forEach(function(a){ %>
+            <li>
+              <span class="act-ico act-<%= a.tipo %>"></span>
+              <div><p><%= a.descripcion %></p><small><%= a.detalle ? a.detalle + ' · ' : '' %><%= h.hace(a.creado_en) %></small></div>
+            </li>
+          <% }) %>
+          <% if (!actividades.length) { %><li class="empty">Aún no hay actividad. Empieza una sesión de estudio.</li><% } %>
+        </ul>
+      </div>
+    </aside>
+  </div>
+</main>
+<%- include('partials/flash') %>
+<%- include('partials/foot') %>

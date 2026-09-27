@@ -1,0 +1,42 @@
+<%- include('partials/head', { bodyClass: 'study-body' }) %>
+<div class="study">
+  <aside class="study-side" aria-label="Herramientas">
+    <a href="/panel" class="study-back" title="Volver al panel">←</a>
+    <button class="study-tab" data-mode="alarma" type="button"><span>⏰</span>Alarma</button>
+    <button class="study-tab" data-mode="temporizador" type="button"><span>⏳</span>Temporizador</button>
+    <button class="study-tab on" data-mode="cronometro" type="button"><span>⏱</span>Cronómetro</button>
+    <button class="study-tab" data-mode="reloj" type="button"><span>🕒</span>Reloj</button>
+  </aside>
+
+  <main class="study-main">
+    <div class="study-top">
+      <label for="curso">Estudiando:</label>
+      <select id="curso">
+        <option value="">Estudio libre</option>
+        <% cursos.forEach(function(c){ %><option value="<%= c.id %>"><%= c.nombre %></option><% }) %>
+      </select>
+      <button type="button" class="study-icon" id="btn-full" title="Pantalla completa">⛶</button>
+    </div>
+
+    <div class="presets" id="presets" hidden>
+      <button type="button" data-min="25">25 min</button>
+      <button type="button" data-min="50">50 min</button>
+      <button type="button" data-min="5">5 min</button>
+    </div>
+    <div class="presets" id="alarma-box" hidden>
+      <input type="time" id="alarma-hora" aria-label="Hora de la alarma">
+      <button type="button" id="alarma-set">Programar</button>
+    </div>
+
+    <div class="digits" id="display" aria-live="off">00:00<small>.00</small></div>
+    <p class="study-status" id="status">Presiona Iniciar y concéntrate.</p>
+
+    <div class="study-actions">
+      <button type="button" class="s-btn orange" id="btn-start">Iniciar</button>
+      <button type="button" class="s-btn green" id="btn-save">Guardar</button>
+      <button type="button" class="s-btn ghost" id="btn-reset">Reiniciar</button>
+    </div>
+  </main>
+</div>
+<%- include('partials/flash') %>
+<%- include('partials/foot', { scripts: ['/js/estudio.js'] }) %>

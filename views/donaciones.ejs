@@ -1,0 +1,87 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Donaciones y patrocinios</h1>
+      <p class="muted">Apoya la infraestructura tecnológica y académica de MasterEstudio · Libre de publicidad</p>
+    </div>
+    <span class="pill">Patrocinador oficial</span>
+  </div>
+
+  <section class="stats three">
+    <div class="stat">
+      <div class="stat-top"><span>Total recaudado</span><i class="ico">💰</i></div>
+      <strong id="st-total"><%= h.soles(stats.total) %></strong>
+      <small>Desde el inicio del proyecto</small>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><span>Donaciones recibidas</span><i class="ico">💜</i></div>
+      <strong><span id="st-cantidad"><%= stats.cantidad %></span> transacciones</strong>
+      <small>Promedio: <span id="st-promedio"><%= h.soles(stats.promedio) %></span> por aporte</small>
+    </div>
+    <div class="stat">
+      <div class="stat-top"><span>Donantes únicos</span><i class="ico">👥</i></div>
+      <strong><span id="st-donantes"><%= stats.donantes %></span> personas</strong>
+      <small>Comunidad activa y colaboradores</small>
+    </div>
+  </section>
+
+  <div class="grid-main">
+    <section>
+      <div class="section-head">
+        <h2>Aportaciones recientes <span class="live">● en vivo</span></h2>
+        <a href="/donaciones/reporte.csv" class="link small">Exportar reporte (CSV)</a>
+      </div>
+      <ul class="donations" id="lista-donaciones">
+        <% recientes.forEach(function(dn){ %>
+          <li class="card donation">
+            <span class="avatar" style="background:<%= h.colorAvatar(dn.nombre_donante) %>"><%= h.iniciales(dn.nombre_donante) %></span>
+            <div class="don-body">
+              <div class="don-top"><strong><%= dn.nombre_donante %></strong><b><%= h.soles(dn.monto) %></b></div>
+              <small class="muted"><%= h.hace(dn.creado_en) %></small>
+              <% if (dn.mensaje) { %><p class="quote">“<%= dn.mensaje %>”</p><% } %>
+            </div>
+          </li>
+        <% }) %>
+      </ul>
+    </section>
+
+    <aside class="side">
+      <section class="card">
+        <h3>Tabla de honor (líderes)</h3>
+        <p class="muted small">Los patrocinadores más destacados de nuestra comunidad.</p>
+        <ol class="honor" id="tabla-honor">
+          <% honor.forEach(function(x, i){ %>
+            <li><span class="pos">#<%= i + 1 %></span><span class="name"><%= x.nombre %></span><b><%= h.soles(x.total) %></b></li>
+          <% }) %>
+        </ol>
+        <div class="cta">
+          <p><b>¿Quieres figurar en la lista?</b></p>
+          <p class="small">Todas las contribuciones nos ayudan a pagar los servidores y mantener el sitio rápido y seguro.</p>
+          <button class="btn btn-primary btn-block" type="button" data-open="dlg-donar">Hacer una donación</button>
+        </div>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<dialog id="dlg-donar" class="dialog">
+  <form action="/donaciones" method="post" class="form">
+    <h3>Hacer una donación</h3>
+    <label for="monto">Monto (S/)</label>
+    <input id="monto" name="monto" type="number" min="1" max="10000" step="0.01" value="10" required>
+    <div class="quick-amounts">
+      <% [5, 10, 25, 50, 100].forEach(function(v){ %><button type="button" data-monto="<%= v %>">S/<%= v %></button><% }) %>
+    </div>
+    <label for="mensaje">Mensaje (opcional)</label>
+    <textarea id="mensaje" name="mensaje" maxlength="200" rows="3" placeholder="Deja unas palabras para la comunidad"></textarea>
+    <label class="check"><input type="checkbox" name="anonimo"> Donar como anónimo</label>
+    <div class="dialog-actions">
+      <button type="button" class="btn btn-outline" data-close>Cancelar</button>
+      <button type="submit" class="btn btn-primary">Donar</button>
+    </div>
+  </form>
+</dialog>
+<%- include('partials/flash') %>
+<%- include('partials/foot') %>

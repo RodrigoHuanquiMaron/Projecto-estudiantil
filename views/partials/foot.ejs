@@ -1,0 +1,7 @@
+<% if (typeof sinSocket === 'undefined' || !sinSocket) { %>
+<script src="/socket.io/socket.io.js"></script>
+<% } %>
+<script src="/js/app.js"></script>
+<% if (typeof scripts !== 'undefined') { scripts.forEach(function(s){ %><script src="<%= s %>"></script><% }) } %>
+</body>
+</html>

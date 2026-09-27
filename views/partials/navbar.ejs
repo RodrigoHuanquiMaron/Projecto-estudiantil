@@ -1,0 +1,28 @@
+<header class="topbar">
+  <div class="topbar-inner">
+    <%- include('logo') %>
+    <nav class="nav" aria-label="Principal">
+      <a href="/panel" class="<%= seccion === 'panel' ? 'active' : '' %>">Panel</a>
+      <a href="/cursos" class="<%= seccion === 'cursos' ? 'active' : '' %>">Mis Cursos</a>
+      <a href="/desempeno" class="<%= seccion === 'desempeno' ? 'active' : '' %>">Desempeño</a>
+      <a href="/donaciones" class="<%= seccion === 'donaciones' ? 'active' : '' %>">Donaciones</a>
+    </nav>
+    <div class="topbar-right">
+      <span class="online" title="Personas conectadas ahora"><i></i><span id="online-count">1</span> en línea</span>
+      <button class="bell" id="bell" type="button" aria-label="Notificaciones">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+        <span class="bell-badge" id="bell-badge" hidden>0</span>
+      </button>
+      <div class="user-chip">
+        <div class="user-text">
+          <strong><%= user.nombre %></strong>
+          <small><%= user.carrera %></small>
+        </div>
+        <span class="avatar" style="background:<%= h.colorAvatar(user.nombre) %>"><%= user.iniciales %></span>
+      </div>
+      <form action="/logout" method="post">
+        <button class="btn-link" type="submit">Salir</button>
+      </form>
+    </div>
+  </div>
+</header>

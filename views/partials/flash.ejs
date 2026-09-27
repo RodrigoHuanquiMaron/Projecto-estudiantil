@@ -1,0 +1,4 @@
+<div class="toasts" id="toasts" aria-live="polite">
+  <% (typeof flashSuccess !== 'undefined' ? flashSuccess : []).forEach(function(m){ %><div class="toast ok"><%= m %></div><% }) %>
+  <% (typeof flashError !== 'undefined' ? flashError : []).forEach(function(m){ %><div class="toast err"><%= m %></div><% }) %>
+</div>

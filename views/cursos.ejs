@@ -1,0 +1,45 @@
+<%- include('partials/head') %>
+<%- include('partials/navbar') %>
+<main class="page">
+  <div class="page-head">
+    <div>
+      <h1>Mis cursos</h1>
+      <p class="muted"><%= user.ciclo %> · Semestre 2026-II · <%= total %> cursos registrados</p>
+    </div>
+    <nav class="filters" aria-label="Filtrar cursos">
+      <a href="/cursos" class="<%= !filtro ? 'on' : '' %>">Todos</a>
+      <a href="/cursos?estado=en_curso" class="<%= filtro === 'en_curso' ? 'on' : '' %>">En curso (<%= conteo.en_curso || 0 %>)</a>
+      <a href="/cursos?estado=completado" class="<%= filtro === 'completado' ? 'on' : '' %>">Completado (<%= conteo.completado || 0 %>)</a>
+      <a href="/cursos?estado=no_iniciado" class="<%= filtro === 'no_iniciado' ? 'on' : '' %>">No iniciado (<%= conteo.no_iniciado || 0 %>)</a>
+    </nav>
+  </div>
+
+  <% if (!cursos.length) { %>
+    <div class="card empty-state">No tienes cursos en este estado. <a class="link" href="/cursos">Ver todos</a></div>
+  <% } %>
+
+  <section class="course-grid">
+    <% cursos.forEach(function(curso){ %>
+      <article class="card course">
+        <div class="card-meta">
+          <span><%= curso.categoria %></span>
+          <span class="badge <%= curso.estado %>"><%= h.estado(curso.estado) %></span>
+        </div>
+        <%- include('partials/art', { curso: curso }) %>
+        <h3><%= curso.nombre %></h3>
+        <p class="muted small">Instructor: <%= curso.instructor %></p>
+        <%- include('partials/progress', { curso: curso }) %>
+        <div class="course-actions">
+          <a class="btn btn-primary btn-sm" href="/cursos/<%= curso.id %>">Ver curso</a>
+          <a class="btn btn-outline btn-sm" href="/cursos/<%= curso.id %>#materiales">Materiales</a>
+        </div>
+      </article>
+    <% }) %>
+  </section>
+
+  <% if (hayMas) { %>
+    <div class="center"><a class="btn btn-outline" href="/cursos?todos=1<%= filtro ? '&estado=' + filtro : '' %>">Mostrar más cursos</a></div>
+  <% } %>
+</main>
+<%- include('partials/flash') %>
+<%- include('partials/foot') %>

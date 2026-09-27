@@ -1,0 +1,9 @@
+<%- include('partials/head') %>
+<% var logueado = typeof user !== 'undefined' && user && typeof seccion !== 'undefined'; if (logueado) { %><%- include('partials/navbar') %><% } %>
+<main class="page narrow center error-page">
+  <p class="error-code"><%= codigo %></p>
+  <h1><%= mensaje %></h1>
+  <a class="btn btn-primary" href="/">Ir al inicio</a>
+</main>
+<%- include('partials/flash') %>
+<%- include('partials/foot', { sinSocket: !logueado }) %>

@@ -1,0 +1,34 @@
+# Blueprint de Render: crea la web, PostgreSQL y Redis (Key Value) de una sola vez.
+services:
+  - type: web
+    name: masterestudio
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DATABASE_URL
+        fromDatabase:
+          name: masterestudio-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: masterestudio-redis
+          property: connectionString
+      - key: SESSION_SECRET
+        generateValue: true
+
+  - type: keyvalue
+    name: masterestudio-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+    ipAllowList: []   # solo accesible desde tus servicios de Render
+
+databases:
+  - name: masterestudio-db
+    plan: free
+    databaseName: masterestudio
+    user: masterestudio
